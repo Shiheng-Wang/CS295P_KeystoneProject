@@ -7,7 +7,8 @@ import pymysql
 def norm_name(A):
     if ('-' in A):
         index = A.index('-')
-        A = A[index+1:]+A[0:index]
+        #A = A[index+1:]+A[0:index]
+        A = A[index+1:]
     return A
 
 def dataclearing(A):
@@ -62,14 +63,18 @@ def key_value_process(dom):
     #key_value.append('Company_name')
     if ('Earnings' in key_value):
         key_value[key_value.index( 'Earnings')]='Earningsttm'
-    if ('WeekChange52' in key_value):
-        key_value[key_value.index( 'WeekChange52')]='WeekChange52WSP'
-    if ('WeekChange26' in key_value):
-        key_value[key_value.index( 'WeekChange26')]='WeekChange26WSP'
-    if ('WeekChange13' in key_value):
-        key_value[key_value.index( 'WeekChange13')]='WeekChange13WSP'
-    if ('WeekChange4' in key_value):
-        key_value[key_value.index( 'WeekChange4')]='WeekChange4WSP'
+    if ('WeekChange' in key_value):
+        key_value[key_value.index( 'WeekChange')]='WeekChangeWSP'
+    #     if ('WeekChange52' in key_value):
+    #         key_value[key_value.index( 'WeekChange52')]='WeekChangeWSP'
+    #     if ('WeekChange26' in key_value):
+    #         key_value[key_value.index( 'WeekChange26')]='WeekChangeWSP'
+    #     if ('WeekChange13' in key_value):
+    #         key_value[key_value.index( 'WeekChange13')]='WeekChangeWSP'
+    #     if ('WeekChange4' in key_value):
+    #         key_value[key_value.index( 'WeekChange4')]='WeekChangeWSP'
+    if ('TermDebtEquity' in key_value):
+        key_value[key_value.index('TermDebtEquity')]='TermDebtEquityLong'
     if ('Return' in key_value):
         key_value[key_value.index( 'Return')]='ReturnAssets'
     if ('Return' in key_value):
@@ -86,6 +91,7 @@ def key_value_process(dom):
         key_value[key_value.index( 'Sales')]='Salesttm'
     if ('Mostrecentquarter' in key_value):
         key_value[key_value.index('Mostrecentquarter')]='MostrecentquarterF'
+    key_value.append('Company')
     return key_value
 
 def value_process(dom):
@@ -113,6 +119,7 @@ def datapipline(path):
     dom = etree.parse(path, etree.HTMLParser())
     key_value = key_value_process(dom)
     value = value_process(dom)
+    value.append("'"+path[path.rfind('/')+1:path.rfind('.')]+"'")
     #print(key_value)
     if (len(key_value)!=len(value)):
         print('error:')
@@ -139,8 +146,8 @@ def exeQuery(cur,sql):
 def connClose(conn,cur):
     cur.close()
     conn.close()
-
-def main:
+    
+def main():
     ConnDB1=connDB()
     filePath='E:/UCI Staff/274/2001/10/profiles/Yahoo/US/01/p/'
     file_name = os.listdir(filePath)
@@ -154,7 +161,7 @@ def main:
     for key in html_name:
         if (key[-10:]!='index.html'):
             data = datapipline(key)
-            #print(data)
+            print(data)
             if (len(data)==0):
                 continue
                 print('空data')

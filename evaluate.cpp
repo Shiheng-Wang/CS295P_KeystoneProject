@@ -4,6 +4,8 @@
 #include <limits>
 #include <vector>
 
+int budget;
+
 bool myCompare(std::pair<std::string, float> a, std::pair<std::string, float> b) {
     return a.second > b.second;
 }
@@ -13,6 +15,9 @@ int main(int argc, char* argv[]) {
         std::cerr << "Enter year and month as command line arguments.\n";
         exit(0);
     }
+
+    std::cout << "Enter your budget: ";
+    std::cin >> budget;
 
     float actualY = std::numeric_limits<float>::min();
     std::string maxName, line, month = argv[2], year = argv[1];
@@ -59,8 +64,23 @@ int main(int argc, char* argv[]) {
     modelOut.sort(modelOut.begin(), modelOut.end(), myCompare);
     myFile.close();
 
-    // Calculate the error using mean squared error
+    // Pick the top stocks to buy
     
+    int numOfCurStock;
+    std::vector<std::pair<std::string, int> > result;
+    for (int i = 0; i < modelOut.size(); i++) {
+        numOfCurStock = budget / modelOut[i].second;
+        budget -= numOfCurStock * modelOut[i].second;
+        std::pair<std::string, int> curStock;
+        curStock.first = modelOut[i].first;
+        curStock.second = numOfCurStock;
+        result.push_back(curStock);
+    }
+
+    // Print out the result
+    for (int i = 0; i < result.size(); i++) {
+        std::cout << "Buy " << result[i].second << " shares of " << result[i].first << "\n";
+    }
 
     return 0;
 }

@@ -3,20 +3,17 @@
 #include <string>
 #include <limits>
 #include <vector>
+#include <unordered_map>
 
-int budget;
+float budget;
 
-struct Stock{
-    std::string name;
-    float Yvalue;
-    float openPrice;
-};
-
-bool myCompare(Stock a, Stock b) {
-    return a.Yvalue > b.Yvalue;
+bool myCompare(std::pair<std::string, float> a, std::pair<std::string, float> b)
+{
+    return a.second > b.second;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
 
     std::cout << "Enter your budget: ";
     std::cin >> budget;
@@ -24,46 +21,80 @@ int main(int argc, char* argv[]) {
 
     std::ifstream myFile;
     float curY, curPrice;
-    size_t commaIndex;
+    size_t commaIndex1, commaIndex2;
     std::string name;
 
+    // Get open price for the next month
+    std::cout << "Reading the prices\n";
+    std::unordered_map<std::string, std::pair<float, float> > opens;
+    myFile.open("openClose1111.txt");
+    while (std::getline(myFile, line))
+    {
+        commaIndex1 = line.find(',');
+        commaIndex2 = line.find(',', commaIndex1 + 1);
+        name = line.substr(0, commaIndex1);
+        std::pair<float, float> curPrices;
+        curPrices.first = std::stof(line.substr(commaIndex1 + 1, commaIndex2));
+        curPrices.second = std::stof(line.substr(commaIndex2 + 1));
+        opens[name] = curPrices;
+    }
+    myFile.close();
+    std::cout << "Done\n";
+
     // Get output from the model
-    std::vector<Stock> modelOut;
+    std::cout << "Reading the model output\n";
+    std::vector<std::pair<std::string, float> > modelOut;
     myFile.open("sample_output.csv");
     std::getline(myFile, line);
-    
-    while (std::getline(myFile, line)) {
-        commaIndex = line.find(',');
-        curY = std::stof(line.substr(commaIndex + 1));
-        name = line.substr(0, commaIndex);
-        Stock cur;
-        cur.name = name;
-        cur.Yvalue = curY;
-        cur.openPrice = curPrice;
+
+    while (std::getline(myFile, line))
+    {
+        commaIndex1 = line.find(',');
+        commaIndex2 = line.find(',', commaIndex1 + 1);
+        curY = std::stof(line.substr(commaIndex2 + 1));
+        name = line.substr(0, commaIndex1);
+        std::pair<std::string, float> cur;
+        cur.first = name;
+        cur.second = curY;
         modelOut.push_back(cur);
     }
 
     std::sort(modelOut.begin(), modelOut.end(), myCompare);
     myFile.close();
+    std::cout << "Done\n";
 
-    // Pick the top stocks to buy
-    
+    // Pick the top 10 stocks to buy
+
+    std::cout << "Picking stocks\n";
     int numOfCurStock;
     std::vector<std::pair<std::string, int> > result;
-    for (int i = 0; i < modelOut.size(); i++) {
-        numOfCurStock = budget / modelOut[i].openPrice;
-        if (numOfCurStock == 0) continue;
-        budget -= numOfCurStock * modelOut[i].openPrice;
-        std::pair<std::string, int> curStock;
-        curStock.first = modelOut[i].name;
-        curStock.second = numOfCurStock;
-        result.push_back(curStock);
+    int counter = 0, index = 0;
+    while (counter < 10)
+    {
+        std::pair<std::string, int> cur;
+        name = modelOut[index].first;
+        if (opens.count(name) == 0) {
+            index++;
+            continue;
+        }
+        numOfCurStock = (int)((budget / 10) / opens[name].first);
+        // std::cout << name << " " << numOfCurStock << "\n";
+        cur.first = name;
+        cur.second = numOfCurStock;
+        result.push_back(cur);
+        index++;
+        counter++;
     }
 
     // Print out the result
-    for (int i = 0; i < result.size(); i++) {
+    float profit = 0;
+    for (int i = 0; i < result.size(); i++)
+    {
         std::cout << "Buy " << result[i].second << " shares of " << result[i].first << "\n";
+        profit += (opens[result[i].first].second - opens[result[i].first].first) * result[i].second;
     }
+
+    std::cout << "The total profit is " << profit << ", which is " << profit / budget << " of the budget." << std::endl;
 
     return 0;
 }

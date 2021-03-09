@@ -14,7 +14,7 @@ bool myCompare(std::pair<std::string, float> a, std::pair<std::string, float> b)
 
 int main(int argc, char *argv[])
 {
-
+    std::string filename = argv[1];
     std::cout << "Enter your budget: ";
     std::cin >> budget;
     std::string line;
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     // Get output from the model
     std::cout << "Reading the model output\n";
     std::vector<std::pair<std::string, float> > modelOut;
-    myFile.open("sample_output.csv");
+    myFile.open(filename);
     std::getline(myFile, line);
 
     while (std::getline(myFile, line))

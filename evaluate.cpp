@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     // Get open price for the next month
     std::cout << "Reading the prices\n";
     std::unordered_map<std::string, std::pair<float, float> > opens;
-    myFile.open("openClose1112.txt");
+    myFile.open("openClose1111.txt");
     while (std::getline(myFile, line))
     {
         commaIndex1 = line.find(',');

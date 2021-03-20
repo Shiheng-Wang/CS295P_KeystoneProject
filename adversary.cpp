@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
     std::ifstream inFile;
     std::string line;
 
-
     // Read the open prices at the beginning of the month
     // and the close prices at the end of the month
     inFile.open("openClose1112.txt");
@@ -52,7 +51,6 @@ int main(int argc, char *argv[])
 
     inFile.open("output12.txt");
     while (std::getline(inFile, line)) {
-        // std::cout << line << "\n";
         getNameAndShare(line);
     }
     inFile.close();

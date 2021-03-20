@@ -8,11 +8,6 @@
 std::unordered_map<std::string, double> earnings;
 double profit = 0.0;
 
-bool myCompare(std::pair<std::string, float> a, std::pair<std::string, float> b)
-{
-    return a.second > b.second;
-}
-
 void getNameAndShare(std::string line) {
     int shares;
     std::string name;
@@ -34,7 +29,7 @@ int main(int argc, char *argv[])
     std::string line;
 
     // Read the open prices at the beginning of the month
-    // and the close prices at the end of the month
+    // and the close prices at the end of the month (Parsed locally)
     inFile.open("openClose1112.txt");
     size_t commaIdx1, commaIdx2;
     std::string name;
